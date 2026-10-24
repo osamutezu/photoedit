@@ -13,7 +13,7 @@ const config=[
 {polygonSize:[26,8,90],edgeSensitivity:[60,0,100],irregularity:[40,0,100],colorSimplification:[30,0,100],outline:[0,0,100],seed:[5,0,999]},
 {pattern:['DOT','LINE','CROSS','SQUARE'],colorMode:['MONO','CMYK','ORIGINAL'],dotSize:[8,3,22],frequency:[100,40,180],angle:[25,0,90],contrast:[110,40,200],inkSpread:[25,0,100],paperColor:[96,60,100]},
 {tracking:[48,0,100],colorBleed:[50,0,100],tapeNoise:[35,0,100],dropout:[25,0,100],headSwitching:[35,0,100],softness:[25,0,100],tapeAge:[30,0,100],seed:[7,0,999]},
-{projection:['FULL FRAME','CIRCULAR'],distortion:[75,0,100],fieldOfView:[165,90,200],zoom:[100,70,180],centerX:[50,0,100],centerY:[50,0,100],edgeSoftness:[5,0,30],chromaticAberration:[8,0,100],vignette:[12,0,100],background:['BLACK','WHITE']}
+{projection:['FULL FRAME','CIRCULAR'],direction:['BULGE','PINCH'],curve:[70,0,100],distortion:[75,0,100],fieldOfView:[165,90,200],zoom:[100,70,180],centerX:[50,0,100],centerY:[50,0,100],edgeSoftness:[5,0,30],chromaticAberration:[8,0,100],vignette:[12,0,100],background:['BLACK','WHITE']}
 ];
 const styles=['DREAMCORE','BACKROOMS','LIMINAL SPACE'];
 const stylePresets={'DREAMCORE':['VIVID DREAM','PALE BLUE','WARM MEMORY','EERIE GREEN'],'BACKROOMS':['LEVEL 0','ABANDONED','POOLROOMS'],'LIMINAL SPACE':['EMPTY MALL','AFTER HOURS','PALE MEMORY','DAYLIGHT VOID']};
@@ -94,9 +94,19 @@ if(e===12){
     const dx=x-cx,dy=y-cy,dist=Math.hypot(dx,dy),nr=dist/maxR;
     let alpha=1;
     if(circle){alpha=softPx>0?Math.max(0,Math.min(1,(radius-dist)/softPx)):+(dist<=radius)}
-    const k=1+strength*2.2;
-    // Inverse equidistant-style radial mapping; strength=0 remains rectilinear.
-    const mapped=nr===0?1:(1-strength)+strength*(Math.atan(nr*k)/Math.atan(k))/nr;
+    // Curved radial lens mapping: normalized atan / tan profiles are inverses.
+    // BULGE magnifies the center; PINCH reverses the radial direction.
+    // CURVE blends the lens profile with a gentler polynomial profile.
+    const r=Math.min(1,Math.max(0,nr)),k=1.1+strength*2.9;
+    const curvedBulge=Math.atan(r*k)/Math.atan(k);
+    const curvedPinch=Math.tan(r*Math.atan(k))/k;
+    const gentleBulge=r*(1-.55*strength*(1-r*r));
+    const gentlePinch=r*(1+.55*strength*(1-r*r));
+    const curved=v.direction==='PINCH'?curvedPinch:curvedBulge;
+    const gentle=v.direction==='PINCH'?gentlePinch:gentleBulge;
+    const bend=(v.curve??70)/100;
+    const radial=r*(1-strength)+strength*(gentle*(1-bend)+curved*bend);
+    const mapped=r>1e-7?radial/r:1;
     const scale=mapped*fovFactor/zoom;
     const sx=cx+dx*scale,sy=cy+dy*scale;
     const shift=ca*dist*.018;

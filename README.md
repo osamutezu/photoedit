@@ -18,3 +18,10 @@ Upload the contents (not ZIP) to the root of GitHub Pages repository. The update
 Added FISHEYE LENS as the 13th gallery item, without changing the existing 12 items. Includes FULL FRAME / CIRCULAR projection, radial distortion, field of view, zoom, adjustable optical center, circular edge softness, chromatic aberration, vignette and background. All processing is on-device.
 
 Note: This is a browser-based approximation of a fisheye lens, not an optical calibration of a particular real lens. Existing SwiftUI v35 and previous PWA effects are not modified.
+
+
+## v5 — Language and fisheye lens
+- Japanese/English toggle in header, saved locally; settings labels are translated while effect identifiers remain stable.
+- FISHEYE LENS adds DIRECTION (BULGE / PINCH) and CURVE (0–100). The radial mapping uses nonlinear atan/tan lens profiles.
+- Existing effects, settings, presets, and PWA assets are retained.
+- Browser syntax checked; iPhone/iPad testing not performed.

@@ -12,3 +12,9 @@ Based on PWA v2; SwiftUI v35 used as reference.
 This is **not a complete feature-for-feature port** of SwiftUI v35. Other effects, controls, exact output fidelity, full-resolution rendering and localization require further audit/porting. Coordinate labels in v3 refer to the rendered canvas, not always the original photograph. The original SwiftUI project is unchanged.
 
 Upload the contents (not ZIP) to the root of GitHub Pages repository. The updated sw.js cache key helps refresh installed PWAs.
+
+
+## v4 — FISHEYE LENS
+Added FISHEYE LENS as the 13th gallery item, without changing the existing 12 items. Includes FULL FRAME / CIRCULAR projection, radial distortion, field of view, zoom, adjustable optical center, circular edge softness, chromatic aberration, vignette and background. All processing is on-device.
+
+Note: This is a browser-based approximation of a fisheye lens, not an optical calibration of a particular real lens. Existing SwiftUI v35 and previous PWA effects are not modified.

@@ -1,5 +1,5 @@
 /* Analog Image Processor PWA — independent browser implementations, not a pixel-exact Swift port. */
-const names=['1-BIT DITHER','NIGHT VERSION','CRT','ATMOSPHERE','RISOGRAPH','BLOB TRACKING','DATAMOSH','ASCII ART','FILM CAMERA','LOW POLY','HALFTONE','VHS TAPE'];
+const names=['1-BIT DITHER','NIGHT VERSION','CRT','ATMOSPHERE','RISOGRAPH','BLOB TRACKING','DATAMOSH','ASCII ART','FILM CAMERA','LOW POLY','HALFTONE','VHS TAPE','FISHEYE LENS'];
 const config=[
 {threshold:[128,0,255],scale:[2,1,12],pattern:['BAYER','FLOYD STEINBERG']},
 {color:['GREEN','MONOCHROME'],greenIntensity:[100,0,100],gain:[2.2,0.5,5,.1],contrast:[1.25,.4,3,.05],grain:[22,0,100],grainSize:[3,1,10],grainDensity:[65,0,100],glow:[22,0,100],scope:[1,0,1],scopeSize:[88,40,100],edgeSoftness:[8,0,30],crosshair:[1,0,1],zoom:[1,1,3,.1]},
@@ -12,7 +12,8 @@ const config=[
 {preset:['COLOR NEGATIVE','SLIDE FILM','EXPIRED FILM','BLACK & WHITE'],grain:[25,0,100],halation:[25,0,100],fade:[20,0,100],temperature:[15,-100,100],contrast:[110,40,200],vignette:[30,0,100],lightLeak:[18,0,100]},
 {polygonSize:[26,8,90],edgeSensitivity:[60,0,100],irregularity:[40,0,100],colorSimplification:[30,0,100],outline:[0,0,100],seed:[5,0,999]},
 {pattern:['DOT','LINE','CROSS','SQUARE'],colorMode:['MONO','CMYK','ORIGINAL'],dotSize:[8,3,22],frequency:[100,40,180],angle:[25,0,90],contrast:[110,40,200],inkSpread:[25,0,100],paperColor:[96,60,100]},
-{tracking:[48,0,100],colorBleed:[50,0,100],tapeNoise:[35,0,100],dropout:[25,0,100],headSwitching:[35,0,100],softness:[25,0,100],tapeAge:[30,0,100],seed:[7,0,999]}
+{tracking:[48,0,100],colorBleed:[50,0,100],tapeNoise:[35,0,100],dropout:[25,0,100],headSwitching:[35,0,100],softness:[25,0,100],tapeAge:[30,0,100],seed:[7,0,999]},
+{projection:['FULL FRAME','CIRCULAR'],distortion:[75,0,100],fieldOfView:[165,90,200],zoom:[100,70,180],centerX:[50,0,100],centerY:[50,0,100],edgeSoftness:[5,0,30],chromaticAberration:[8,0,100],vignette:[12,0,100],background:['BLACK','WHITE']}
 ];
 const styles=['DREAMCORE','BACKROOMS','LIMINAL SPACE'];
 const stylePresets={'DREAMCORE':['VIVID DREAM','PALE BLUE','WARM MEMORY','EERIE GREEN'],'BACKROOMS':['LEVEL 0','ABANDONED','POOLROOMS'],'LIMINAL SPACE':['EMPTY MALL','AFTER HOURS','PALE MEMORY','DAYLIGHT VOID']};
@@ -68,4 +69,46 @@ if(e===8){let mono=v.preset==='BLACK & WHITE',expired=v.preset==='EXPIRED FILM',
 if(e===9){o.fillStyle='#111';o.fillRect(0,0,w,h);let step=v.polygonSize,seed=v.seed,points=[];for(let y=-step;y<h+step;y+=step){let row=[];for(let x=-step;x<w+step;x+=step){let jitter=step*v.irregularity/200;row.push([x+(rnd(x,y,seed)-.5)*jitter*2,y+(rnd(x+2,y,seed)-.5)*jitter*2])}points.push(row)}function tri(a,b,z){let cx=(a[0]+b[0]+z[0])/3,cy=(a[1]+b[1]+z[1])/3,i=pix(d,w,cx,cy),q=Math.max(1,Math.round(v.colorSimplification/8));o.fillStyle=`rgb(${Math.round(d[i]/q)*q},${Math.round(d[i+1]/q)*q},${Math.round(d[i+2]/q)*q})`;o.beginPath();o.moveTo(...a);o.lineTo(...b);o.lineTo(...z);o.closePath();o.fill();if(v.outline){o.strokeStyle=`rgba(0,0,0,${v.outline/160})`;o.lineWidth=.6;o.stroke()}}for(let y=0;y<points.length-1;y++)for(let x=0;x<points[y].length-1;x++){let a=points[y][x],b=points[y][x+1],cc=points[y+1][x],dd=points[y+1][x+1];tri(a,b,cc);tri(b,dd,cc)}return out}
 if(e===10){let sz=v.dotSize*100/v.frequency,paper=Math.round(v.paperColor*2.55),contrast=v.contrast/100,pattern=v.pattern,mode=v.colorMode;o.fillStyle=`rgb(${paper},${paper},${paper})`;o.fillRect(0,0,w,h);for(let y=sz/2;y<h;y+=sz)for(let x=sz/2;x<w;x+=sz){let i=pix(d,w,x,y),l=clamp((lum(d[i],d[i+1],d[i+2])-128)*contrast+128),radius=sz*.68*Math.sqrt(1-l/255)*(1+v.inkSpread/250);o.fillStyle=mode==='ORIGINAL'?`rgb(${d[i]},${d[i+1]},${d[i+2]})`:mode==='CMYK'?`rgb(${Math.round(d[i]*.5)},${Math.round(d[i+1]*.5)},${Math.round(d[i+2]*.5)})`:'#181818';o.save();o.translate(x,y);o.rotate(v.angle*Math.PI/180);if(pattern==='DOT'){o.beginPath();o.arc(0,0,radius,0,7);o.fill()}else if(pattern==='SQUARE')o.fillRect(-radius,-radius,radius*2,radius*2);else{o.fillRect(-sz*.5,-radius,sz,radius*2);if(pattern==='CROSS')o.fillRect(-radius,-sz*.5,radius*2,sz)}o.restore()}return out}
 if(e===11){let orig=new Uint8ClampedArray(d),seed=v.seed;for(let y=0;y<h;y++)for(let x=0;x<w;x++){let band=Math.floor(y/7),offset=(rnd(band,0,seed)<v.tracking/280)?Math.round((rnd(band,1,seed)-.5)*v.tracking*2):0;if(y>h*.94)offset+=Math.sin(y*.6)*v.headSwitching*.6;let i=(y*w+x)*4,s=pix(orig,w,x+offset,y),r=pix(orig,w,x+offset+v.colorBleed*.12,y),b=pix(orig,w,x+offset-v.colorBleed*.12,y),n=(rnd(x,y,seed)-.5)*v.tapeNoise*1.3;d[i]=clamp(orig[r]*(1-v.tapeAge/550)+n+v.tapeAge*.12);d[i+1]=clamp(orig[s+1]*(1-v.tapeAge/650)+n);d[i+2]=clamp(orig[b+2]*(1-v.tapeAge/350)+n);if(rnd(Math.floor(y/2),0,seed)<v.dropout/1100&&rnd(x,y,seed)>.2){d[i]=d[i+1]=d[i+2]=clamp(170+n)}}o.putImageData(base,0,0);soft(out,v.softness/18);return out}
+if(e===12){
+  // Inverse radial mapping: center magnification with progressively compressed periphery.
+  // Circular projection masks to a physical circular image; full-frame fills the rectangle.
+  const src=d, dst=o.createImageData(w,h), dd=dst.data;
+  const cx=w*v.centerX/100,cy=h*v.centerY/100;
+  const radius=Math.min(w,h)*.5;
+  const strength=v.distortion/100, zoom=v.zoom/100;
+  const fovFactor=Math.max(.6,Math.min(1.45,v.fieldOfView/165));
+  const circle=v.projection==='CIRCULAR';
+  const maxR=circle?radius:Math.hypot(Math.max(cx,w-cx),Math.max(cy,h-cy));
+  const softPx=radius*v.edgeSoftness/100;
+  const bg=v.background==='WHITE'?255:0;
+  const ca=v.chromaticAberration/100;
+  const vig=v.vignette/100;
+  function sample(x,y,channel){
+    x=Math.max(0,Math.min(w-1,x));y=Math.max(0,Math.min(h-1,y));
+    let x0=Math.floor(x),y0=Math.floor(y),x1=Math.min(w-1,x0+1),y1=Math.min(h-1,y0+1);
+    let fx=x-x0,fy=y-y0;
+    let a=src[(y0*w+x0)*4+channel],b=src[(y0*w+x1)*4+channel],c=src[(y1*w+x0)*4+channel],d=src[(y1*w+x1)*4+channel];
+    return (a*(1-fx)+b*fx)*(1-fy)+(c*(1-fx)+d*fx)*fy;
+  }
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const dx=x-cx,dy=y-cy,dist=Math.hypot(dx,dy),nr=dist/maxR;
+    let alpha=1;
+    if(circle){alpha=softPx>0?Math.max(0,Math.min(1,(radius-dist)/softPx)):+(dist<=radius)}
+    const k=1+strength*2.2;
+    // Inverse equidistant-style radial mapping; strength=0 remains rectilinear.
+    const mapped=nr===0?1:(1-strength)+strength*(Math.atan(nr*k)/Math.atan(k))/nr;
+    const scale=mapped*fovFactor/zoom;
+    const sx=cx+dx*scale,sy=cy+dy*scale;
+    const shift=ca*dist*.018;
+    const idx=(y*w+x)*4;
+    const shade=Math.max(0,1-vig*Math.pow(Math.min(1,nr),2)*.85);
+    for(let ch=0;ch<3;ch++){
+      const off=ch===0?shift:ch===2?-shift:0;
+      const val=sample(sx+(dist?dx/dist*off:0),sy+(dist?dy/dist*off:0),ch)*shade;
+      dd[idx+ch]=clamp(val*alpha+bg*(1-alpha));
+    }
+    dd[idx+3]=255;
+  }
+  o.putImageData(dst,0,0);return out;
+}
 o.putImageData(base,0,0);return out}

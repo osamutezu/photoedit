@@ -19,3 +19,6 @@ Source-level inspection and JavaScript syntax validation; not a complete real-de
 
 ## Install
 Upload all ZIP contents to the GitHub Pages repository root. Verify V13 label, and clear the older PWA cache if necessary. Confirm that the font's license permits redistribution.
+
+## v14
+FILM CAMERAの撮影日刻印を右下に移動。数字のグループ間隔をフォントサイズに対する比率で制御し、参考画像に近い年・月・日表示に変更。

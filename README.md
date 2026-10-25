@@ -34,3 +34,10 @@ v28: VIDEO EXPORT QUALITY selectors for 480p/720p/1080p long edge and 15/24/30 t
 - Unmute the source HTMLVideoElement for Web Audio capture; silence speaker output using a zero-gain Web Audio branch. Some Safari versions produce silent Web Audio when the media element itself is muted.
 - Add an analyser-based audio activity warning. This is not a guarantee of a playable audio track in the final file.
 - iPhone Safari runtime test is required; silent source videos and unsupported recorder audio codecs remain possible.
+
+
+## V31 — Video trim and longer clips
+- Remove the 15-second hard limit. IN/OUT sliders set a selected time interval; default is the full source.
+- Encoding progress is relative to the selected interval, below SAVE VIDEO. Audio KEEP remains enabled by default.
+- Real-time MediaRecorder encoding remains memory/performance constrained, especially on iPhone. Long exports are not guaranteed.
+- No automatic memory optimization or pause/resume; test short clips before longer ones.

@@ -15,3 +15,6 @@ FILM CAMERA date stamp color: ORANGE / GREEN. All v9 controls preserved.
 
 
 V11: FILM CAMERA date imprint uses a custom glowing seven-segment camera-style font and compact date layout: apostrophe + two-digit year, month without leading zero, two-digit day (e.g. '94 4 15). Existing orange/green options retained.
+
+
+V12: Film date stamp uses user-supplied DS-DIGII.TTF (DS-Digital Italic). Ensure you have the rights to distribute the font on your public GitHub Pages site.

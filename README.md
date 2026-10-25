@@ -1,3 +1,22 @@
+# AnalogImageProcessor PWA v33 — Fixed FPS experimental export
+
+Built from actual v32 files, preserving existing 13 effects, photo export, trim, quality, audio-capable realtime export, and sharing.
+
+## New VIDEO EXPORT ENGINE
+- REALTIME · AUDIO (default): v32 recording method, retains source audio where supported, can drop frames on slow effects.
+- FIXED FPS · SILENT (BETA): frame-by-frame seek, effect render, WebCodecs H.264 encoding with explicit timestamps, self-contained MP4 muxing. Video-only (NO AUDIO). This is an experimental alternative, not a proven fix for Safari; browser support and decoding performance vary.
+- The fixed mode uses the selected trim range, resolution, and FPS. It may take longer than the source clip to process. For 30 seconds at 30fps, approximately 900 frames are encoded.
+
+## Limitations
+- Fixed FPS mode exports SILENT video. It cannot preserve audio yet. Use REALTIME mode to retain source audio.
+- Fixed FPS mode depends on Safari WebCodecs H.264 encoding and accurate seek support. Not tested on a physical iPhone. Some videos may fail or produce inaccurate source frame selection due to seek precision.
+- This mode processes each requested output frame and assigns evenly spaced timestamps, but does not guarantee source frames are all distinct (video decoder may seek to nearest available frame).
+- If FIXED FPS fails, use the existing REALTIME mode.
+- Both modes retain the existing share/download buttons.
+
+## Validation
+JavaScript syntax checked with Node, ZIP integrity checked. iPhone Safari runtime not tested.
+
 # Analog Image Processor PWA v25 — Video MVP
 
 Based on the actual v24 files; all 13 photo effects, photo export, and controls remain.

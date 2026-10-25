@@ -64,3 +64,11 @@ v28: VIDEO EXPORT QUALITY selectors for 480p/720p/1080p long edge and 15/24/30 t
 
 ## v32 frame scheduling / diagnostics
 During video export, the normal preview animation loop no longer processes frames. The export loop skips duplicate video timestamps, and UI/progress updates are throttled. Export progress shows measured processed frames per wall-clock second. The output still uses real-time canvas.captureStream and MediaRecorder; this does not guarantee the requested FPS or solve expensive per-frame effects. Audio capture, trim, formats, and 13 effects are preserved.
+
+
+## v34 — MIRROR HORIZONTAL
+- Added OFF/ON horizontal mirror control in the photo editor, below effect/general settings.
+- Default OFF for every newly imported or camera-captured image; no automatic selfie detection because iOS file input does not reliably expose front-camera provenance.
+- Flip is applied to the source image before the effect, so overlays such as the film date stamp remain readable and the saved image matches the preview.
+- Photo gallery thumbnails reflect the mirror state. Video mode is unaffected.
+- For a selfie whose orientation differs from the camera preview, switch MIRROR HORIZONTAL to ON.

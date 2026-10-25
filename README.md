@@ -17,3 +17,6 @@ v26: Video export shows persistent download/share controls and a playable result
 
 
 v27: Video export progress and resulting video actions are located directly below SAVE VIDEO (below the editor controls), instead of inside the playback panel. Primary action opens the native iOS share sheet, where the user may choose Save Video to Photos if supported. Web pages cannot silently save into the iOS Photos library. MP4 is preferred; WebM may not be supported by Photos. DOWNLOAD FILE remains as a fallback.
+
+
+v28: VIDEO EXPORT QUALITY selectors for 480p/720p/1080p long edge and 15/24/30 target FPS. The source is not upscaled. MediaRecorder records canvas in real time, so actual frame rate can be lower; iOS performance is not verified. Audio remains unsupported. Existing photo and 13 effects preserved.

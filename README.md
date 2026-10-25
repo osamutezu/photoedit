@@ -22,3 +22,12 @@ Upload all ZIP contents to the GitHub Pages repository root. Verify V13 label, a
 
 ## v14
 FILM CAMERAの撮影日刻印を右下に移動。数字のグループ間隔をフォントサイズに対する比率で制御し、参考画像に近い年・月・日表示に変更。
+
+## v15 — Research-based film-date calibration
+- Film-date height at DATE SIZE 26 follows the CHINON Auto Date specification (0.7 mm on 24 mm frame = 2.92% of picture height).
+- Film-date at lower right with proportional 3% right and 5% bottom margins (margins are design approximations, not verified camera specs).
+- Character group spacing is proportional to the actual rendered glyph height, with narrow glyph spacing and larger year/month/day gaps.
+- Restrains glow to approximate film exposure. Orange is supported by Canon documentation; green is an optional creative variant.
+- DS-Digital Italic is a font approximation and does not replicate Canon's documented 6x7 dot-matrix exactly.
+- Source: https://www.cameramanuals.org/chinon_specs/chinon_infoback-2.pdf
+- Source: https://manualzz.com/doc/2030323/canon-sure-shot-65-zoom--prima-zoom-65-film-camera-user-m...

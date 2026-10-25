@@ -74,3 +74,18 @@ Scope diameter now uses min(image width, image height), default 99% of the short
 - PNG quality: LOSSLESS only.
 - Actual encoded sizes appear in parentheses directly in every final quality choice; the format selector also shows the size for its current quality.
 - Size computation updates after image/effect/setting changes. PNG and JPG are encoded from the same export canvas.
+
+
+## v23 Blob Tracking connections
+- Fixed the distance cutoff that left multiple detected blobs with no connecting lines.
+- SHOW EDGES now draws a minimum spanning tree between all detected centroids (when 2+ exist).
+- EDGE DENSITY adds nearby links beyond that baseline, without affecting detection, boxes or coordinates.
+- Links visualize proximity only; they are not evidence of physical or temporal object tracking.
+
+
+## v24 — Blob detection diagnostics and bounding box scale
+- Adds BOX SCALE (60–160%, default 100%) to change only the displayed bounding rectangles, not the detected regions or their centroids.
+- Displays the number of accepted connected regions and the actual minimum pixel-area cutoff at analysis resolution. The cutoff is discrete, so slider changes may not affect accepted regions until a region crosses the threshold.
+- Preserves the v23 minimum-spanning-tree connections and all other effects and export settings.
+- Does not add semantic face/eye/nose recognition: this requires a separate local ML model and an explicit performance/offline design.
+- Static syntax/ZIP checks do not establish iPhone runtime correctness.

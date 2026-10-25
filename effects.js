@@ -6,7 +6,7 @@ const config=[
 {brightness:[0,-80,80],scanlines:[65,0,100],pixelGrid:[35,0,100],chromaticShift:[3,0,14],curvature:[15,0,100],bloom:[25,0,100],noise:[10,0,100],frame:[1,0,1]},
 {exposure:[0,-80,80],contrast:[100,30,200],saturation:[85,0,200],temperature:[0,-100,100],bloom:[30,0,100],haze:[18,0,100],blur:[1,0,8,.5],fade:[15,0,100],grain:[14,0,100],vignette:[12,0,100],greenBoost:[20,0,100],skyBlue:[20,0,100],nostalgia:[20,0,100],fluorescent:[45,0,100],unevenLight:[45,0,100],yellowCast:[65,0,100],void:[45,0,100],unrealLight:[40,0,100]},
 {palette:['FLUORO PINK / BLUE','RED / BLUE','GREEN / ORANGE','BLACK / RED','TEAL / CORAL','PURPLE / YELLOW','BLUE / YELLOW','PINK / GREEN','NAVY / GOLD','BURGUNDY / MINT','VIOLET / LIME','CYAN / MAGENTA','FOREST / PINK','BROWN / SKY BLUE','BLACK / YELLOW','INDIGO / ORANGE'],dotSize:[5,2,16],inkDensity:[80,0,100],misregistration:[3,0,12],grain:[15,0,100],paper:[90,50,100],contrast:[110,40,180]},
-{threshold:[135,0,255],minimumArea:[18,1,200],lineWidth:[2,1,8],opacity:[90,0,100],glow:[35,0,100],monochrome:[35,0,100],showBoxes:[1,0,1],showCenters:[1,0,1],detectDark:[0,0,1],palette:['CYAN','NEON GREEN','ORANGE','WHITE','MAGENTA'],showCoordinates:[1,0,1],showEdges:[1,0,1],edgeDensity:[45,0,100]},
+{threshold:[135,0,255],minimumArea:[18,1,200],boxScale:[100,60,160],lineWidth:[2,1,8],opacity:[90,0,100],glow:[35,0,100],monochrome:[35,0,100],showBoxes:[1,0,1],showCenters:[1,0,1],detectDark:[0,0,1],palette:['CYAN','NEON GREEN','ORANGE','WHITE','MAGENTA'],showCoordinates:[1,0,1],showEdges:[1,0,1],edgeDensity:[45,0,100]},
 {intensity:[65,0,100],blockSize:[22,4,100],smear:[50,0,100],chromaticShift:[40,0,100],density:[45,0,100],noise:[20,0,100],seed:[7,0,999],waveDistortion:[30,0,100],waveScale:[40,0,100],verticalTrails:[35,0,100],blockScatter:[40,0,100],greenBleed:[30,0,100]},
 {characterSet:['ALPHABET','KANJI','NUMBERS','SYMBOLS','BLOCKS'],color:['ORIGINAL COLOR','WHITE','NEON GREEN','AMBER'],background:['BLACK','WHITE'],characterSize:[10,5,28],density:[85,20,180],contrast:[110,40,200],brightness:[0,-80,80],fontWeight:[500,200,900,100],spacing:[100,60,160],invert:[0,0,1],saturation:[100,0,200],gamma:[100,30,240]},
 {preset:['COLOR NEGATIVE','SLIDE FILM','EXPIRED FILM','BLACK & WHITE'],grain:[25,0,100],halation:[25,0,100],fade:[20,0,100],temperature:[15,-100,100],contrast:[110,40,200],vignette:[30,0,100],lightLeak:[18,0,100],dateStamp:['OFF','PHOTO DATE','MANUAL'],dateSize:[26,12,70],dateColor:['ORANGE','GREEN']},
@@ -91,12 +91,36 @@ if(e===5){
   const regions=[],queue=new Int32Array(dw*dh);
   for(let start=0;start<active.length;start++){if(!active[start]||seen[start])continue;let head=0,tail=1;queue[0]=start;seen[start]=1;let minX=dw,minY=dh,maxX=0,maxY=0,sumX=0,sumY=0;while(head<tail){let p=queue[head++],x=p%dw,y=(p/dw)|0;minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);sumX+=x;sumY+=y;let neighbors=[x>0?p-1:-1,x<dw-1?p+1:-1,y>0?p-dw:-1,y<dh-1?p+dw:-1];for(let n of neighbors)if(n>=0&&active[n]&&!seen[n]){seen[n]=1;queue[tail++]=n}}if(tail>=minPixels&&tail<=maxPixels)regions.push({minX,minY,maxX,maxY,count:tail,cx:sumX/tail,cy:sumY/tail})}
   regions.sort((a,b)=>b.count-a.count);regions.length=Math.min(regions.length,45);
+  // UI diagnostic: count of accepted regions (not semantic objects).
+  out.dataset.blobCount=String(regions.length);
+  out.dataset.blobMinPixels=String(minPixels);
   let colors={'CYAN':'#00efff','NEON GREEN':'#49ff4b','ORANGE':'#ff8b20','WHITE':'#ffffff','MAGENTA':'#ff43d0'},col=colors[v.palette]||'#00efff';
   if(v.monochrome){o.fillStyle=`rgba(0,0,0,${v.monochrome/300})`;o.fillRect(0,0,w,h)}
   o.save();o.strokeStyle=col;o.fillStyle=col;o.globalAlpha=v.opacity/100;o.lineWidth=Math.max(1,Math.min(w,h)*(.001+.006*v.lineWidth/8));o.shadowColor=col;o.shadowBlur=o.lineWidth*(1+v.glow/12);
   const fx=w/dw,fy=h/dh;
-  if(v.showEdges&&v.edgeDensity&&regions.length>1){let maxDist=Math.hypot(w,h)*(.12+v.edgeDensity/250),pairs=new Set();for(let i=0;i<regions.length;i++){let r=regions[i],near=regions.map((q,j)=>({j,dist:Math.hypot((q.cx-r.cx)*fx,(q.cy-r.cy)*fy)})).filter(q=>q.j!==i&&q.dist<maxDist).sort((a,b)=>a.dist-b.dist).slice(0,1+Math.floor(v.edgeDensity/25));for(let q of near){let key=[Math.min(i,q.j),Math.max(i,q.j)].join('-');if(pairs.has(key))continue;pairs.add(key);o.beginPath();o.moveTo(r.cx*fx,r.cy*fy);o.lineTo(regions[q.j].cx*fx,regions[q.j].cy*fy);o.stroke()}}}
-  regions.forEach((r,i)=>{let x=r.minX*fx,y=r.minY*fy,bw=(r.maxX-r.minX+1)*fx,bh=(r.maxY-r.minY+1)*fy,cx=r.cx*fx,cy=r.cy*fy;if(v.showBoxes)o.strokeRect(x,y,bw,bh);if(v.showCenters){let rad=Math.max(2,o.lineWidth*3);o.beginPath();o.arc(cx,cy,rad,0,Math.PI*2);o.stroke();o.beginPath();o.moveTo(cx-rad*1.8,cy);o.lineTo(cx+rad*1.8,cy);o.moveTo(cx,cy-rad*1.8);o.lineTo(cx,cy+rad*1.8);o.stroke()}if(v.showBoxes||v.showCoordinates){o.shadowBlur=0;let fontSize=Math.max(9,Math.min(w,h)*.018);o.font=`bold ${fontSize}px monospace`;let label=v.showCoordinates?`#${String(i+1).padStart(2,'0')} X:${Math.round(r.minX/dw*w)} Y:${Math.round(r.minY/dh*h)} W:${Math.round(bw)} H:${Math.round(bh)}`:`ID ${String(i+1).padStart(2,'0')}`;o.fillText(label,Math.max(2,Math.min(x+2,w-o.measureText(label).width-2)),Math.max(fontSize,y-3));o.shadowBlur=o.lineWidth*(1+v.glow/12)}});o.restore();return out}
+  // Blob detection yields independent regions; these lines are a visualization graph,
+  // not an inference that the regions are physically connected. First build a
+  // minimum spanning tree (Kruskal) so distant but valid detections never remain
+  // disconnected. Then edgeDensity controls optional additional nearby links.
+  if(v.showEdges&&regions.length>1){
+    const n=regions.length, edges=[], parent=Array.from({length:n},(_,i)=>i), used=new Set();
+    const root=i=>{while(parent[i]!==i){parent[i]=parent[parent[i]];i=parent[i]}return i};
+    const draw=(i,j)=>{const a=regions[i],b=regions[j];o.beginPath();o.moveTo(a.cx*fx,a.cy*fy);o.lineTo(b.cx*fx,b.cy*fy);o.stroke();used.add(`${Math.min(i,j)}-${Math.max(i,j)}`)};
+    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+      const a=regions[i],b=regions[j];
+      edges.push({i,j,d:Math.hypot((a.cx-b.cx)*fx,(a.cy-b.cy)*fy)});
+    }
+    edges.sort((a,b)=>a.d-b.d||a.i-b.i||a.j-b.j);
+    let connected=0;
+    for(const e of edges){let a=root(e.i),b=root(e.j);if(a===b)continue;parent[a]=b;draw(e.i,e.j);if(++connected===n-1)break}
+    const density=Math.max(0,Math.min(100,Number(v.edgeDensity)||0));
+    // At density 0 the minimum spanning tree remains visible; higher values
+    // add the closest unused links without creating an uncontrolled full mesh.
+    const extraCount=Math.round((density/100)*Math.min(edges.length-(n-1),n*2));
+    let added=0;
+    for(const e of edges){if(added>=extraCount)break;const key=`${e.i}-${e.j}`;if(used.has(key))continue;draw(e.i,e.j);added++}
+  }
+  regions.forEach((r,i)=>{let x=r.minX*fx,y=r.minY*fy,bw=(r.maxX-r.minX+1)*fx,bh=(r.maxY-r.minY+1)*fy,cx=r.cx*fx,cy=r.cy*fy;if(v.showBoxes){const bs=Math.max(.1,Number(v.boxScale||100)/100),sw=bw*bs,sh=bh*bs;o.strokeRect(x+(bw-sw)/2,y+(bh-sh)/2,sw,sh)}if(v.showCenters){let rad=Math.max(2,o.lineWidth*3);o.beginPath();o.arc(cx,cy,rad,0,Math.PI*2);o.stroke();o.beginPath();o.moveTo(cx-rad*1.8,cy);o.lineTo(cx+rad*1.8,cy);o.moveTo(cx,cy-rad*1.8);o.lineTo(cx,cy+rad*1.8);o.stroke()}if(v.showBoxes||v.showCoordinates){o.shadowBlur=0;let fontSize=Math.max(9,Math.min(w,h)*.018);o.font=`bold ${fontSize}px monospace`;let label=v.showCoordinates?`#${String(i+1).padStart(2,'0')} X:${Math.round(r.minX/dw*w)} Y:${Math.round(r.minY/dh*h)} W:${Math.round(bw)} H:${Math.round(bh)}`:`ID ${String(i+1).padStart(2,'0')}`;o.fillText(label,Math.max(2,Math.min(x+2,w-o.measureText(label).width-2)),Math.max(fontSize,y-3));o.shadowBlur=o.lineWidth*(1+v.glow/12)}});o.restore();return out}
 if(e===6){
   const bs=Math.max(1,Math.round(v.blockSize)),seed=v.seed,intensity=v.intensity/100,density=v.density/100;
   if(!intensity||!density){o.putImageData(base,0,0);return out}

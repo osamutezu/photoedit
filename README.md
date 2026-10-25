@@ -20,3 +20,11 @@ v27: Video export progress and resulting video actions are located directly belo
 
 
 v28: VIDEO EXPORT QUALITY selectors for 480p/720p/1080p long edge and 15/24/30 target FPS. The source is not upscaled. MediaRecorder records canvas in real time, so actual frame rate can be lower; iOS performance is not verified. Audio remains unsupported. Existing photo and 13 effects preserved.
+
+
+## v29 — Source audio (experimental)
+- VIDEO EXPORT QUALITY > SOURCE AUDIO: ON / KEEP or OFF / SILENT. Default ON.
+- Uses Web Audio MediaElementAudioSourceNode and MediaStreamDestination to add an audio track to the canvas capture stream.
+- If Web Audio is unavailable or MediaRecorder rejects the audio track, falls back to silent export when possible.
+- Audio capture/muxing and Photos compatibility depend on iOS Safari's encoder. Verify the exported file's sound before relying on it.
+- No backend, no third-party dependency. 15s maximum and existing resolutions/FPS preserved.

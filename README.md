@@ -1,20 +1,21 @@
-# Analog Image Processor — PWA v8
+# Analog Image Processor PWA v13 — functional audit
 
-Based on v7. Adds export format selection with **actual encoded file sizes** next to SMART, LOSSLESS PNG, HIGH QUALITY and PNG. The encoding is performed on-device and file sizes update after preview changes. All formats share the exact v7 export dimensions and pixels before compression.
+Built from the actual v12 ZIP. Preserves all 13 effects, date stamp with DS-DIGII.TTF, languages, and Smart Export.
 
-SMART prioritizes PNG for graphic effects (pixel-accurate edges) and chooses the smallest encoded candidate for photographic effects. HIGH QUALITY compares browser-supported WebP and JPEG at quality 0.95. LOSSLESS and PNG both use PNG; they therefore have the same file size. Browser codec support may vary.
+## Corrected
+- NIGHT VERSION: grainSize affects the grain pattern.
+- CRT: curvature now bends the screen.
+- RISOGRAPH: contrast and grain change the dot pattern.
+- ASCII ART: density, gamma and saturation affect rendering.
+- LOW POLY: edgeSensitivity affects triangle color sampling.
+- ATMOSPHERE: each named preset changes the color treatment.
+- FILM CAMERA: COLOR NEGATIVE is distinct from other presets.
+- 1-BIT DITHER: Bayer cell indexing respects pixel scale.
+- Export: prevent saving an outdated compression result after the image changes.
+- Service worker version bumped for refresh.
 
-Note: WebP/JPEG are lossy; identical visual quality cannot be guaranteed. Output pixels are still derived from the v7 preview; this version does not restore original-image resolution detail.
+## Audit scope and limitations
+Source-level inspection and JavaScript syntax validation; not a complete real-device regression test. FILM CAMERA date controls are implemented in index.html (not effects.js). Additional issues may exist on specific browsers or photo formats. Browser support for JPEG/PNG EXIF, WebP, and sharing varies. Existing PWA image effects are approximate browser implementations, not pixel-identical to the Swift version.
 
-Upload all runtime files to the root of your existing GitHub Pages repository. Version: v8.
-
-V9: FILM CAMERA date stamp OFF / PHOTO DATE (JPEG EXIF or PNG eXIf) / MANUAL, size control. If no capture metadata, no fabricated date. Stamped preview is identical to saved output. HEIC capture metadata may not be available to the browser; use MANUAL.
-
-## v10
-FILM CAMERA date stamp color: ORANGE / GREEN. All v9 controls preserved.
-
-
-V11: FILM CAMERA date imprint uses a custom glowing seven-segment camera-style font and compact date layout: apostrophe + two-digit year, month without leading zero, two-digit day (e.g. '94 4 15). Existing orange/green options retained.
-
-
-V12: Film date stamp uses user-supplied DS-DIGII.TTF (DS-Digital Italic). Ensure you have the rights to distribute the font on your public GitHub Pages site.
+## Install
+Upload all ZIP contents to the GitHub Pages repository root. Verify V13 label, and clear the older PWA cache if necessary. Confirm that the font's license permits redistribution.

@@ -41,3 +41,7 @@ v28: VIDEO EXPORT QUALITY selectors for 480p/720p/1080p long edge and 15/24/30 t
 - Encoding progress is relative to the selected interval, below SAVE VIDEO. Audio KEEP remains enabled by default.
 - Real-time MediaRecorder encoding remains memory/performance constrained, especially on iPhone. Long exports are not guaranteed.
 - No automatic memory optimization or pause/resume; test short clips before longer ones.
+
+
+## v32 frame scheduling / diagnostics
+During video export, the normal preview animation loop no longer processes frames. The export loop skips duplicate video timestamps, and UI/progress updates are throttled. Export progress shows measured processed frames per wall-clock second. The output still uses real-time canvas.captureStream and MediaRecorder; this does not guarantee the requested FPS or solve expensive per-frame effects. Audio capture, trim, formats, and 13 effects are preserved.

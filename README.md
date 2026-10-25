@@ -46,3 +46,10 @@ FILM CAMERAの撮影日刻印を右下に移動。数字のグループ間隔を
 
 ## v18: NIGHT VERSION scope
 Scope diameter now uses min(image width, image height), default 99% of the short side. CROSSHAIR ON/OFF preserved.
+
+
+## V19 — unified controls
+- EFFECT / GENERAL tabs across all 13 effects.
+- GENERAL has shared post-processing brightness, contrast, saturation (neutral defaults 0/100/100); pre-existing per-effect tone controls remain available in GENERAL to avoid loss of functionality.
+- NIGHT VERSION scope size and edge softness are only visible when SCOPE is on; FILM CAMERA date options only when date stamping is on. Hidden settings retain values.
+- Preview uses shared final adjustments; exported image is based on preview canvas.

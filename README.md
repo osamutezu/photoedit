@@ -12,3 +12,6 @@ V9: FILM CAMERA date stamp OFF / PHOTO DATE (JPEG EXIF or PNG eXIf) / MANUAL, si
 
 ## v10
 FILM CAMERA date stamp color: ORANGE / GREEN. All v9 controls preserved.
+
+
+V11: FILM CAMERA date imprint uses a custom glowing seven-segment camera-style font and compact date layout: apostrophe + two-digit year, month without leading zero, two-digit day (e.g. '94 4 15). Existing orange/green options retained.

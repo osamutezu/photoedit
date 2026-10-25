@@ -11,3 +11,6 @@ Based on the actual v24 files; all 13 photo effects, photo export, and controls 
 - Original photo mode remains available.
 
 Upload the extracted files to GitHub Pages, replacing the previous version.
+
+
+v26: Video export shows persistent download/share controls and a playable result preview; canvas dimensions are no longer reset each frame. Only video image preview is sticky; playback controls, progress and explanatory text scroll. Browser export compatibility remains device-dependent; audio not yet supported.

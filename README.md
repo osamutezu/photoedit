@@ -37,3 +37,12 @@ FILM CAMERAの撮影日刻印を右下に移動。数字のグループ間隔を
 - New controls: scintillation, halo, edgeFalloff. Existing color, greenIntensity, gain, contrast, grain, grainSize, grainDensity, glow, scope, scopeSize, edgeSoftness, crosshair, zoom preserved.
 - Reference: US Army PEO Soldier 2025 technology compendium (image intensifier), ISO/DIS 14132-5 terminology, ATN PVS-14 operator manual, Exosens phosphor P43/P45 product information.
 - Limits: single-photo simulation cannot reconstruct missing low-light details or physically simulate a particular intensifier tube. Crosshair and extra glow remain creative options. Device testing not performed.
+
+## v17 NIGHT VERSION
+- Scope radius now uses the image width, default 99%, allowing the circular edge to nearly touch left/right boundaries. On landscape images, top/bottom cropping is expected from the circular optical viewport.
+- SCOPE SIZE adjustable 50–110%; 100% means circle diameter equals image width.
+- CROSSHAIR now offers explicit ON / OFF options; legacy numeric state remains supported.
+
+
+## v18: NIGHT VERSION scope
+Scope diameter now uses min(image width, image height), default 99% of the short side. CROSSHAIR ON/OFF preserved.

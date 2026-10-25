@@ -2,7 +2,7 @@
 const names=['1-BIT DITHER','NIGHT VERSION','CRT','ATMOSPHERE','RISOGRAPH','BLOB TRACKING','DATAMOSH','ASCII ART','FILM CAMERA','LOW POLY','HALFTONE','VHS TAPE','FISHEYE LENS'];
 const config=[
 {threshold:[128,0,255],scale:[2,1,12],pattern:['BAYER','FLOYD STEINBERG']},
-{color:['GREEN','MONOCHROME'],greenIntensity:[100,0,100],gain:[2.2,0.5,5,.1],contrast:[1.25,.4,3,.05],grain:[22,0,100],grainSize:[3,1,10],grainDensity:[65,0,100],scintillation:[35,0,100],halo:[35,0,100],edgeFalloff:[18,0,100],glow:[22,0,100],scope:[1,0,1],scopeSize:[88,40,100],edgeSoftness:[8,0,30],crosshair:[1,0,1],zoom:[1,1,3,.1]},
+{color:['GREEN','MONOCHROME'],greenIntensity:[100,0,100],gain:[2.2,0.5,5,.1],contrast:[1.25,.4,3,.05],grain:[22,0,100],grainSize:[3,1,10],grainDensity:[65,0,100],scintillation:[35,0,100],halo:[35,0,100],edgeFalloff:[18,0,100],glow:[22,0,100],scope:[1,0,1],scopeSize:[99,50,110],edgeSoftness:[8,0,30],crosshair:['ON','OFF'],zoom:[1,1,3,.1]},
 {brightness:[0,-80,80],scanlines:[65,0,100],pixelGrid:[35,0,100],chromaticShift:[3,0,14],curvature:[15,0,100],bloom:[25,0,100],noise:[10,0,100],frame:[1,0,1]},
 {exposure:[0,-80,80],contrast:[100,30,200],saturation:[85,0,200],temperature:[0,-100,100],bloom:[30,0,100],haze:[18,0,100],blur:[1,0,8,.5],fade:[15,0,100],grain:[14,0,100],vignette:[12,0,100],greenBoost:[20,0,100],skyBlue:[20,0,100],nostalgia:[20,0,100],fluorescent:[45,0,100],unevenLight:[45,0,100],yellowCast:[65,0,100],void:[45,0,100],unrealLight:[40,0,100]},
 {palette:['FLUORO PINK / BLUE','RED / BLUE','GREEN / ORANGE','BLACK / RED','TEAL / CORAL','PURPLE / YELLOW','BLUE / YELLOW','PINK / GREEN','NAVY / GOLD','BURGUNDY / MINT','VIOLET / LIME','CYAN / MAGENTA','FOREST / PINK','BROWN / SKY BLUE','BLACK / YELLOW','INDIGO / ORANGE'],dotSize:[5,2,16],inkDensity:[80,0,100],misregistration:[3,0,12],grain:[15,0,100],paper:[90,50,100],contrast:[110,40,180]},
@@ -68,7 +68,7 @@ if(e===1){
   // Keep legacy glow as a separate, optional creative control.
   if(v.glow)bloom(out,Math.min(100,Number(v.glow))*.35);
   if(v.scope){
-    const radius=Math.min(w,h)*v.scopeSize/200,feather=Math.min(radius*.95,radius*v.edgeSoftness/100*3),start=radius-feather;
+    const radius=Math.min(w,h)*Math.max(50,Math.min(110,Number(v.scopeSize??99)))/200,feather=Math.min(radius*.95,radius*v.edgeSoftness/100*3),start=radius-feather;
     const mask=o.getImageData(0,0,w,h),md=mask.data;
     for(let y=0;y<h;y++)for(let x=0;x<w;x++){
       const r=Math.hypot(x+.5-w/2,y+.5-h/2);
@@ -76,7 +76,7 @@ if(e===1){
       md[(y*w+x)*4+3]=Math.round(alpha*255);
     }
     o.putImageData(mask,0,0);o.save();o.globalCompositeOperation='destination-over';o.fillStyle='#000';o.fillRect(0,0,w,h);o.restore();
-    if(v.crosshair){o.save();o.strokeStyle='rgba(125,255,140,.55)';o.lineWidth=Math.max(.7,w*.001);const cx=w/2,cy=h/2,rr=Math.min(radius*.16,w*.065);o.beginPath();o.moveTo(cx-rr,cy);o.lineTo(cx+rr,cy);o.moveTo(cx,cy-rr);o.lineTo(cx,cy+rr);o.stroke();o.restore()}
+    if(v.crosshair==='ON'||v.crosshair===1||v.crosshair===true){o.save();o.strokeStyle='rgba(125,255,140,.55)';o.lineWidth=Math.max(.7,w*.001);const cx=w/2,cy=h/2,rr=Math.min(radius*.16,w*.065);o.beginPath();o.moveTo(cx-rr,cy);o.lineTo(cx+rr,cy);o.moveTo(cx,cy-rr);o.lineTo(cx,cy+rr);o.stroke();o.restore()}
   }
   return out}
 if(e===2){let shift=Math.round(v.chromaticShift),scan=v.scanlines/100,grid=v.pixelGrid/100;for(let y=0;y<h;y++)for(let x=0;x<w;x++){let i=(y*w+x)*4,l=pix(d,w,x-shift,y),r=pix(d,w,x+shift,y),line=1-(y%3===0?scan*.55:0),mask=1-(x%3===0?grid*.4:0),n=(rnd(x,y)-.5)*v.noise;d[i]=clamp((d[l]+v.brightness+n)*line*mask);d[i+1]=clamp((d[i+1]+v.brightness+n)*line*mask);d[i+2]=clamp((d[r+2]+v.brightness+n)*line*mask)}o.putImageData(base,0,0);bloom(out,v.bloom);if(v.curvature>0){const curved=make(w,h),cc=curved.getContext('2d'),img=o.getImageData(0,0,w,h),src=img.data,dst=cc.createImageData(w,h),k=v.curvature/100*.24;for(let y=0;y<h;y++)for(let x=0;x<w;x++){let nx=(x-w/2)/(w/2),ny=(y-h/2)/(h/2),f=1+k*(nx*nx+ny*ny),sx=Math.round(w/2+nx*f*w/2),sy=Math.round(h/2+ny*f*h/2),di=(y*w+x)*4;if(sx>=0&&sx<w&&sy>=0&&sy<h){let si=(sy*w+sx)*4;for(let j=0;j<3;j++)dst.data[di+j]=src[si+j];dst.data[di+3]=255}else dst.data[di+3]=255}cc.putImageData(dst,0,0);o.clearRect(0,0,w,h);o.drawImage(curved,0,0)}if(v.frame){o.strokeStyle='#060606';o.lineWidth=Math.max(4,w*.02);o.strokeRect(0,0,w,h)}return out}

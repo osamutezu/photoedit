@@ -72,3 +72,12 @@ During video export, the normal preview animation loop no longer processes frame
 - Flip is applied to the source image before the effect, so overlays such as the film date stamp remain readable and the saved image matches the preview.
 - Photo gallery thumbnails reflect the mirror state. Video mode is unaffected.
 - For a selfie whose orientation differs from the camera preview, switch MIRROR HORIZONTAL to ON.
+
+
+## v35: Dedicated camera
+- + CAMERA / 撮影 opens a getUserMedia camera interface (HTTPS required).
+- FRONT preview is mirrored and captured pixels are mirrored once, so the edit preview matches the camera preview. BACK is not mirrored.
+- SWITCH toggles preferred front/back camera; the actual camera is device-dependent.
+- Camera tracks stop on capture, close, or page visibility loss.
+- Existing image import, manual MIRROR HORIZONTAL, video editing, and all effects remain.
+- iPhone Safari runtime has not been verified.

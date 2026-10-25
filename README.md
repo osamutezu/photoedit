@@ -28,3 +28,9 @@ v28: VIDEO EXPORT QUALITY selectors for 480p/720p/1080p long edge and 15/24/30 t
 - If Web Audio is unavailable or MediaRecorder rejects the audio track, falls back to silent export when possible.
 - Audio capture/muxing and Photos compatibility depend on iOS Safari's encoder. Verify the exported file's sound before relying on it.
 - No backend, no third-party dependency. 15s maximum and existing resolutions/FPS preserved.
+
+
+## V30 source audio fix
+- Unmute the source HTMLVideoElement for Web Audio capture; silence speaker output using a zero-gain Web Audio branch. Some Safari versions produce silent Web Audio when the media element itself is muted.
+- Add an analyser-based audio activity warning. This is not a guarantee of a playable audio track in the final file.
+- iPhone Safari runtime test is required; silent source videos and unsupported recorder audio codecs remain possible.

@@ -1,17 +1,14 @@
-# Analog Image Processor — PWA v6
+# Analog Image Processor — PWA v8
 
-最新版v5の全13ギャラリー項目を引き継ぎ、v5で起きていたJavaScript初期化エラーを修正しました。
+Based on v7. Adds export format selection with **actual encoded file sizes** next to SMART, LOSSLESS PNG, HIGH QUALITY and PNG. The encoding is performed on-device and file sizes update after preview changes. All formats share the exact v7 export dimensions and pixels before compression.
 
-## 重要な修正
+SMART prioritizes PNG for graphic effects (pixel-accurate edges) and chooses the smallest encoded candidate for photographic effects. HIGH QUALITY compares browser-supported WebP and JPEG at quality 0.95. LOSSLESS and PNG both use PNG; they therefore have the same file size. Browser codec support may vary.
 
-- `index.html` で `$` が定義される前に言語切替ボタンへイベントを登録していた問題を修正。これはスクリプト全体の停止につながるエラーです。
-- 魚眼の `DIRECTION` (BULGE/PINCH)、`CURVE`、日本語/英語切替を維持。
-- Service Worker のキャッシュ名と読み込みURLをv6へ更新。
-- ヘッダーに `WEB EDITION / V6` と表示。
+Note: WebP/JPEG are lossy; identical visual quality cannot be guaranteed. Output pixels are still derived from the v7 preview; this version does not restore original-image resolution detail.
 
-## GitHub Pages
+Upload all runtime files to the root of your existing GitHub Pages repository. Version: v8.
 
-ZIPを展開し、ファイルをリポジトリ直下にアップロードしてCommit。`README.md`は任意です。
-ホーム画面のPWAを終了して再起動し、ヘッダーがV6になったことを確認してください。更新が残る場合はSafariで公開URLを再読み込みしてください。
+V9: FILM CAMERA date stamp OFF / PHOTO DATE (JPEG EXIF or PNG eXIf) / MANUAL, size control. If no capture metadata, no fabricated date. Stamped preview is identical to saved output. HEIC capture metadata may not be available to the browser; use MANUAL.
 
-実機動作・元SwiftUI版との完全一致は未検証です。
+## v10
+FILM CAMERA date stamp color: ORANGE / GREEN. All v9 controls preserved.

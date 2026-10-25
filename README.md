@@ -1,3 +1,7 @@
+## V20 — ON/OFF UI standardization
+
+Binary controls (numeric 0/1 or text ON/OFF) now use consistent ON/OFF buttons across effects. The stored values and effect algorithms are unchanged. Scope size and edge softness still appear only when scope is ON.
+
 # Analog Image Processor PWA v13 — functional audit
 
 Built from the actual v12 ZIP. Preserves all 13 effects, date stamp with DS-DIGII.TTF, languages, and Smart Export.
@@ -53,3 +57,20 @@ Scope diameter now uses min(image width, image height), default 99% of the short
 - GENERAL has shared post-processing brightness, contrast, saturation (neutral defaults 0/100/100); pre-existing per-effect tone controls remain available in GENERAL to avoid loss of functionality.
 - NIGHT VERSION scope size and edge softness are only visible when SCOPE is on; FILM CAMERA date options only when date stamping is on. Hidden settings retain values.
 - Preview uses shared final adjustments; exported image is based on preview canvas.
+
+
+## v21 Export
+- FORMAT: AUTO / JPG / PNG.
+- QUALITY: SMALL / BALANCED / MAX QUALITY; hidden for PNG (lossless).
+- AUTO SMALL compares JPEG 0.68 and PNG sizes; BALANCED compares JPEG 0.90 and PNG; MAX uses lossless PNG.
+- JPG MAX uses quality 0.98 (still lossy). PNG is always lossless.
+- The displayed file size is the encoded output size for the selected combination.
+- Existing effect render pipeline and preview-resolution export behavior are unchanged.
+
+
+## v22 Export UI
+- FORMAT: JPG / PNG (AUTO removed).
+- JPG quality: SMALL (0.68), BALANCED (0.90), MAX QUALITY (0.98).
+- PNG quality: LOSSLESS only.
+- Actual encoded sizes appear in parentheses directly in every final quality choice; the format selector also shows the size for its current quality.
+- Size computation updates after image/effect/setting changes. PNG and JPG are encoded from the same export canvas.

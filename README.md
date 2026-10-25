@@ -14,3 +14,6 @@ Upload the extracted files to GitHub Pages, replacing the previous version.
 
 
 v26: Video export shows persistent download/share controls and a playable result preview; canvas dimensions are no longer reset each frame. Only video image preview is sticky; playback controls, progress and explanatory text scroll. Browser export compatibility remains device-dependent; audio not yet supported.
+
+
+v27: Video export progress and resulting video actions are located directly below SAVE VIDEO (below the editor controls), instead of inside the playback panel. Primary action opens the native iOS share sheet, where the user may choose Save Video to Photos if supported. Web pages cannot silently save into the iOS Photos library. MP4 is preferred; WebM may not be supported by Photos. DOWNLOAD FILE remains as a fallback.

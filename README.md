@@ -31,3 +31,9 @@ FILM CAMERAの撮影日刻印を右下に移動。数字のグループ間隔を
 - DS-Digital Italic is a font approximation and does not replicate Canon's documented 6x7 dot-matrix exactly.
 - Source: https://www.cameramanuals.org/chinon_specs/chinon_infoback-2.pdf
 - Source: https://manualzz.com/doc/2030323/canon-sure-shot-65-zoom--prima-zoom-65-film-camera-user-m...
+
+## V16 NIGHT VERSION research-guided revision
+- Image-intensifier-inspired tonal gain with highlight compression, source-dependent scintillation, bright-source-only halo, peripheral falloff.
+- New controls: scintillation, halo, edgeFalloff. Existing color, greenIntensity, gain, contrast, grain, grainSize, grainDensity, glow, scope, scopeSize, edgeSoftness, crosshair, zoom preserved.
+- Reference: US Army PEO Soldier 2025 technology compendium (image intensifier), ISO/DIS 14132-5 terminology, ATN PVS-14 operator manual, Exosens phosphor P43/P45 product information.
+- Limits: single-photo simulation cannot reconstruct missing low-light details or physically simulate a particular intensifier tube. Crosshair and extra glow remain creative options. Device testing not performed.

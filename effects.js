@@ -2,7 +2,7 @@
 const names=['1-BIT DITHER','NIGHT VERSION','CRT','ATMOSPHERE','RISOGRAPH','BLOB TRACKING','DATAMOSH','ASCII ART','FILM CAMERA','LOW POLY','HALFTONE','VHS TAPE','FISHEYE LENS'];
 const config=[
 {threshold:[128,0,255],scale:[2,1,12],pattern:['BAYER','FLOYD STEINBERG']},
-{color:['GREEN','MONOCHROME'],greenIntensity:[100,0,100],gain:[2.2,0.5,5,.1],contrast:[1.25,.4,3,.05],grain:[22,0,100],grainSize:[3,1,10],grainDensity:[65,0,100],glow:[22,0,100],scope:[1,0,1],scopeSize:[88,40,100],edgeSoftness:[8,0,30],crosshair:[1,0,1],zoom:[1,1,3,.1]},
+{color:['GREEN','MONOCHROME'],greenIntensity:[100,0,100],gain:[2.2,0.5,5,.1],contrast:[1.25,.4,3,.05],grain:[22,0,100],grainSize:[3,1,10],grainDensity:[65,0,100],scintillation:[35,0,100],halo:[35,0,100],edgeFalloff:[18,0,100],glow:[22,0,100],scope:[1,0,1],scopeSize:[88,40,100],edgeSoftness:[8,0,30],crosshair:[1,0,1],zoom:[1,1,3,.1]},
 {brightness:[0,-80,80],scanlines:[65,0,100],pixelGrid:[35,0,100],chromaticShift:[3,0,14],curvature:[15,0,100],bloom:[25,0,100],noise:[10,0,100],frame:[1,0,1]},
 {exposure:[0,-80,80],contrast:[100,30,200],saturation:[85,0,200],temperature:[0,-100,100],bloom:[30,0,100],haze:[18,0,100],blur:[1,0,8,.5],fade:[15,0,100],grain:[14,0,100],vignette:[12,0,100],greenBoost:[20,0,100],skyBlue:[20,0,100],nostalgia:[20,0,100],fluorescent:[45,0,100],unevenLight:[45,0,100],yellowCast:[65,0,100],void:[45,0,100],unrealLight:[40,0,100]},
 {palette:['FLUORO PINK / BLUE','RED / BLUE','GREEN / ORANGE','BLACK / RED','TEAL / CORAL','PURPLE / YELLOW','BLUE / YELLOW','PINK / GREEN','NAVY / GOLD','BURGUNDY / MINT','VIOLET / LIME','CYAN / MAGENTA','FOREST / PINK','BROWN / SKY BLUE','BLACK / YELLOW','INDIGO / ORANGE'],dotSize:[5,2,16],inkDensity:[80,0,100],misregistration:[3,0,12],grain:[15,0,100],paper:[90,50,100],contrast:[110,40,180]},
@@ -27,14 +27,56 @@ function bloom(canvas,v){if(v<=0)return;let t=make(canvas.width,canvas.height),t
 function effect(canvas,e,v,sty='DREAMCORE',preset=''){const w=canvas.width,h=canvas.height,c=canvas.getContext('2d',{willReadFrequently:true}),base=c.getImageData(0,0,w,h),d=base.data;let out=make(w,h),o=out.getContext('2d',{willReadFrequently:true});
 if(e===0){let bayer=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]],step=+v.scale,arr=new Float32Array(w*h);for(let i=0;i<w*h;i++)arr[i]=lum(d[i*4],d[i*4+1],d[i*4+2]);if(v.pattern==='FLOYD STEINBERG'){for(let y=0;y<h;y++)for(let x=0;x<w;x++){let p=y*w+x,old=arr[p],nv=old>=v.threshold?255:0,er=old-nv;arr[p]=nv;if(x+1<w)arr[p+1]+=er*7/16;if(y+1<h){if(x)arr[p+w-1]+=er*3/16;arr[p+w]+=er*5/16;if(x+1<w)arr[p+w+1]+=er/16}}}for(let y=0;y<h;y++)for(let x=0;x<w;x++){let xx=Math.floor(x/step)*step,yy=Math.floor(y/step)*step,p=yy*w+xx,z=v.pattern==='FLOYD STEINBERG'?arr[p]:(arr[p]+(bayer[Math.floor(yy/step)%4][Math.floor(xx/step)%4]-7.5)*9>=v.threshold?255:0),i=(y*w+x)*4;d[i]=d[i+1]=d[i+2]=z}o.putImageData(base,0,0);return out}
 if(e===1){
+  // Image intensifier-inspired rendering. This is an approximation from a single ordinary photograph,
+  // not a physical reconstruction of photons/electrons or information absent in the original exposure.
   const zoom=Math.max(1,Number(v.zoom||1));
-  if(zoom>1){let z=make(w,h),zc=z.getContext('2d');zc.drawImage(canvas,(w-w/zoom)/2,(h-h/zoom)/2,w/zoom,h/zoom,0,0,w,h);base.data.set(zc.getImageData(0,0,w,h).data)}
-  tone(base,{contrast:v.contrast*100,grain:v.grain*(v.grainDensity/100),exposure:30});
-  for(let i=0;i<d.length;i+=4){let l=lum(d[i],d[i+1],d[i+2]),z=clamp(Math.pow(l/255,.8)*255*v.gain),g=(v.greenIntensity||0)/100;d[i]=v.color==='GREEN'?z*(1-.87*g):z;d[i+1]=z;d[i+2]=v.color==='GREEN'?z*(1-.75*g):z}
-  if(v.grain&&v.grainDensity){const gs=Math.max(1,Math.round(v.grainSize)),gd=v.grainDensity/100;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,n=(rnd(Math.floor(x/gs),Math.floor(y/gs),29)-.5)*v.grain*gd*.9;d[i]=clamp(d[i]+n);d[i+1]=clamp(d[i+1]+n);d[i+2]=clamp(d[i+2]+n)}}
-  o.putImageData(base,0,0);bloom(out,v.glow);
-  if(v.scope){let radius=Math.min(w,h)*v.scopeSize/200,feather=Math.min(radius*.95,radius*v.edgeSoftness/100*3),start=radius-feather,mask=o.getImageData(0,0,w,h),md=mask.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){let r=Math.hypot(x+.5-w/2,y+.5-h/2),alpha=r>=radius?0:r<=start||feather<.5?1:(()=>{let t=(radius-r)/feather;return t*t*(3-2*t)})();md[(y*w+x)*4+3]=Math.round(alpha*255)}o.putImageData(mask,0,0);o.save();o.globalCompositeOperation='destination-over';o.fillStyle='#000';o.fillRect(0,0,w,h);o.restore();
-    if(v.crosshair){o.save();o.strokeStyle='rgba(125,255,140,.55)';o.lineWidth=Math.max(.7,w*.001);let cx=w/2,cy=h/2,rr=Math.min(radius*.16,w*.065);o.beginPath();o.moveTo(cx-rr,cy);o.lineTo(cx+rr,cy);o.moveTo(cx,cy-rr);o.lineTo(cx,cy+rr);o.stroke();o.restore()}
+  if(zoom>1){const z=make(w,h),zc=z.getContext('2d');zc.drawImage(canvas,(w-w/zoom)/2,(h-h/zoom)/2,w/zoom,h/zoom,0,0,w,h);base.data.set(zc.getImageData(0,0,w,h).data)}
+  const input=new Uint8ClampedArray(d), grainAmount=Math.max(0,Number(v.grain||0))/100,
+    grainDensity=Math.max(0,Number(v.grainDensity||0))/100,
+    scint=Math.max(0,Number(v.scintillation||0))/100,
+    edgeFall=Math.max(0,Number(v.edgeFalloff||0))/100,
+    gain=Math.max(.1,Number(v.gain||1)), contrast=Math.max(.1,Number(v.contrast||1)),
+    gs=Math.max(1,Math.round(Number(v.grainSize||1))), green=Math.max(0,Number(v.greenIntensity||0))/100;
+  const bright=make(w,h),bc=bright.getContext('2d'),bi=bc.createImageData(w,h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const i=(y*w+x)*4;
+    const source=lum(input[i],input[i+1],input[i+2])/255;
+    // Gain with highlight compression: intensification cannot create missing detail.
+    let signal=1-Math.exp(-source*gain*1.15);
+    signal=Math.pow(Math.max(0,signal),1/Math.max(.35,contrast));
+    const nx=(x+.5-w/2)/(Math.min(w,h)/2),ny=(y+.5-h/2)/(Math.min(w,h)/2),r=Math.hypot(nx,ny);
+    signal*=1-edgeFall*.36*Math.pow(Math.min(1.7,r),2);
+    // Scintillation is stronger when the input is dim. Noise is deterministic for export parity.
+    const sparkle=(rnd(x,y,401)-.5)*scint*(.12+.88*Math.pow(1-source,1.6));
+    const blockNoise=(rnd(Math.floor(x/gs),Math.floor(y/gs),419)-.5)*grainAmount*grainDensity*.24;
+    const z=clamp((signal+sparkle+blockNoise)*255);
+    if(v.color==='GREEN'){
+      d[i]=clamp(z*(1-.82*green));d[i+1]=z;d[i+2]=clamp(z*(1-.67*green));
+    }else{d[i]=d[i+1]=d[i+2]=z}
+    // Bright-source mask, not a full-frame bloom.
+    const light=Math.pow(Math.max(0,(source-.67)/.33),1.8)*255;
+    bi.data[i]=bi.data[i+1]=bi.data[i+2]=clamp(light);bi.data[i+3]=255;
+  }
+  o.putImageData(base,0,0);
+  const haloStrength=Math.max(0,Number(v.halo||0))/100;
+  if(haloStrength>0){
+    bc.putImageData(bi,0,0);
+    o.save();o.globalCompositeOperation='screen';o.globalAlpha=haloStrength*.75;
+    o.filter=`blur(${Math.max(2,Math.round(Math.min(w,h)*.012))}px)`;
+    o.drawImage(bright,0,0);o.restore();
+  }
+  // Keep legacy glow as a separate, optional creative control.
+  if(v.glow)bloom(out,Math.min(100,Number(v.glow))*.35);
+  if(v.scope){
+    const radius=Math.min(w,h)*v.scopeSize/200,feather=Math.min(radius*.95,radius*v.edgeSoftness/100*3),start=radius-feather;
+    const mask=o.getImageData(0,0,w,h),md=mask.data;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const r=Math.hypot(x+.5-w/2,y+.5-h/2);
+      const alpha=r>=radius?0:r<=start||feather<.5?1:(()=>{const t=(radius-r)/feather;return t*t*(3-2*t)})();
+      md[(y*w+x)*4+3]=Math.round(alpha*255);
+    }
+    o.putImageData(mask,0,0);o.save();o.globalCompositeOperation='destination-over';o.fillStyle='#000';o.fillRect(0,0,w,h);o.restore();
+    if(v.crosshair){o.save();o.strokeStyle='rgba(125,255,140,.55)';o.lineWidth=Math.max(.7,w*.001);const cx=w/2,cy=h/2,rr=Math.min(radius*.16,w*.065);o.beginPath();o.moveTo(cx-rr,cy);o.lineTo(cx+rr,cy);o.moveTo(cx,cy-rr);o.lineTo(cx,cy+rr);o.stroke();o.restore()}
   }
   return out}
 if(e===2){let shift=Math.round(v.chromaticShift),scan=v.scanlines/100,grid=v.pixelGrid/100;for(let y=0;y<h;y++)for(let x=0;x<w;x++){let i=(y*w+x)*4,l=pix(d,w,x-shift,y),r=pix(d,w,x+shift,y),line=1-(y%3===0?scan*.55:0),mask=1-(x%3===0?grid*.4:0),n=(rnd(x,y)-.5)*v.noise;d[i]=clamp((d[l]+v.brightness+n)*line*mask);d[i+1]=clamp((d[i+1]+v.brightness+n)*line*mask);d[i+2]=clamp((d[r+2]+v.brightness+n)*line*mask)}o.putImageData(base,0,0);bloom(out,v.bloom);if(v.curvature>0){const curved=make(w,h),cc=curved.getContext('2d'),img=o.getImageData(0,0,w,h),src=img.data,dst=cc.createImageData(w,h),k=v.curvature/100*.24;for(let y=0;y<h;y++)for(let x=0;x<w;x++){let nx=(x-w/2)/(w/2),ny=(y-h/2)/(h/2),f=1+k*(nx*nx+ny*ny),sx=Math.round(w/2+nx*f*w/2),sy=Math.round(h/2+ny*f*h/2),di=(y*w+x)*4;if(sx>=0&&sx<w&&sy>=0&&sy<h){let si=(sy*w+sx)*4;for(let j=0;j<3;j++)dst.data[di+j]=src[si+j];dst.data[di+3]=255}else dst.data[di+3]=255}cc.putImageData(dst,0,0);o.clearRect(0,0,w,h);o.drawImage(curved,0,0)}if(v.frame){o.strokeStyle='#060606';o.lineWidth=Math.max(4,w*.02);o.strokeRect(0,0,w,h)}return out}

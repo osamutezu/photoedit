@@ -81,3 +81,7 @@ During video export, the normal preview animation loop no longer processes frame
 - Camera tracks stop on capture, close, or page visibility loss.
 - Existing image import, manual MIRROR HORIZONTAL, video editing, and all effects remain.
 - iPhone Safari runtime has not been verified.
+
+
+## v36: Crisp typography and dot exports
+ASCII ART, RISOGRAPH, HALFTONE and 1-BIT DITHER exports are re-rendered at up to 2400px on the long edge instead of enlarging the 1100px preview. Spatial parameters scale proportionally to preserve approximate glyph and dot density. Other effects, photo mirror, camera, video, export formats and controls remain unchanged. This increases CPU and memory cost during export; iPhone browser testing has not been performed. Preview itself still uses the existing 1100px canvas.

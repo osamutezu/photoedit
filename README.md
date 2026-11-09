@@ -85,3 +85,13 @@ During video export, the normal preview animation loop no longer processes frame
 
 ## v36: Crisp typography and dot exports
 ASCII ART, RISOGRAPH, HALFTONE and 1-BIT DITHER exports are re-rendered at up to 2400px on the long edge instead of enlarging the 1100px preview. Spatial parameters scale proportionally to preserve approximate glyph and dot density. Other effects, photo mirror, camera, video, export formats and controls remain unchanged. This increases CPU and memory cost during export; iPhone browser testing has not been performed. Preview itself still uses the existing 1100px canvas.
+
+## v37: editable SVG / vector PDF (beta)
+- Based on complete v36 files; existing JPG/PNG, 13 effects, camera and video remain.
+- For PHOTO effects 1-BIT DITHER, RISOGRAPH, ASCII ART, HALFTONE, a separate editable vector export section appears.
+- SVG contains individual SVG rectangles/circles/polygons and live `<text>` nodes for ASCII. Illustrator can edit these elements; SVG text font is `monospace` (font substitution is possible). In Photoshop, SVG/PDF may be rasterized depending on import mode.
+- PDF is generated with native PDF vector drawing operators. ASCII-only text uses standard Courier and remains PDF text; Japanese / block / non-ASCII symbol sets are supported via SVG, not PDF text, to avoid broken font embedding.
+- The SVG/PDF output is computed from source-image samples rather than traced from a raster export. It is a *vector approximation* of the effect. Floyd-Steinberg diffusion uses a sampled grid, and general adjustments / texture / date imprint are not guaranteed identical to JPG/PNG. The native vector output does not embed the original photo.
+- The number of objects can be large. 90,000 objects is the current safety limit; increase dot or character size if needed.
+- The generated PDF/SVG are intended for Files/Illustrator editing, not directly saving to iOS Photos.
+- Static syntax and ZIP integrity checks were run. iPhone Safari, Illustrator and Photoshop interaction were NOT tested.

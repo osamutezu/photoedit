@@ -41,7 +41,7 @@ function makeDocument(){
   }
  }
  if(current===7){
-  background=v.background==='WHITE'?'#fff':'#050505';const sets={'ALPHABET':'MWNHOAKXVTILJYri;,. ','KANJI':'MWNHOAKXVTILJYri;,. ','LETTERS':'MWNHOAKXVTILJYri;,. ','NUMBERS':'9876543210 ','SYMBOLS':'█▓▒░◆●+·  ','BLOCKS':'█▓▒░ '},chars=sets[v.characterSet]||sets.ALPHABET;
+  background=v.background==='WHITE'?'#fff':'#050505';const sets={'ALPHABET':'MWNHOAKXVTILJYri;,. ','KANJI':'MWNHOAKXVTILJYri;,. ','LETTERS':'MWNHOAKXVTILJYri;,. ','NUMBERS':'9876543210 ','SYMBOLS':'█▓▒░◆●+·  ','BLOCKS':'█▓▒░ '},chars=(window.AIP_CHARSETS&&window.AIP_CHARSETS[v.characterSet])||sets[v.characterSet]||sets.ALPHABET;
   const sz=Number(v.characterSize)*ratio,stepX=Math.max(3*ratio,sz*.64*v.spacing/100*100/v.density),stepY=Math.max(4*ratio,sz*1.1*100/v.density);
   for(let y=0;y<h;y+=stepY)for(let x=0;x<w;x+=stepX){const s=sample(x,y),l=clamp((s[3]-128)*v.contrast/100+128+Number(v.brightness)),p=v.invert?Math.pow(l/255,100/v.gamma):1-Math.pow(l/255,100/v.gamma),k=Math.min(chars.length-1,Math.floor(p*chars.length)),ch=chars[k];if(!ch||ch===' '||ch==='　')continue;let color=v.color==='ORIGINAL COLOR'?hex(...s):({'WHITE':'#f8f8f8','NEON GREEN':'#4dff71','AMBER':'#ffbd55'})[v.color]||'#fff';text(x,y,ch,sz,color,v.fontWeight)}
  }
@@ -51,6 +51,7 @@ function svg(doc){let parts=[`<svg xmlns="http://www.w3.org/2000/svg" width="${d
 function pdf(doc){
  // Native PDF path/text operators. Standard Courier text is editable for Latin ASCII.
  // Non-Latin legacy symbol sets are approximated with editable ASCII in PDF; SVG keeps the original glyphs.
+ if(window.AIP_CHARSETS && window.AIP_CHARSETS[doc.charset] && doc.shapes.some(s=>s.type==='text' && !/^[\x20-\x7e]$/.test(s.char)))throw Error('Japanese characters require SVG export for editable text. PDF supports Latin characters only; use SVG in Illustrator. / 漢字の編集可能な書き出しはSVGを使用してください。');
  const pdfChar=c=>({'█':'M','▓':'W','▒':'N','░':'i','◆':'O','●':'O','·':'.','　':' '})[c]||(/^[\x20-\x7e]$/.test(c)?c:'?');
  const enc=new TextEncoder(),content=[],h=doc.h;
  const rgb=c=>{let x=c.match(/[a-f\d]{2}/gi);return x?x.map(v=>(parseInt(v,16)/255).toFixed(4)).join(' '):'0 0 0'};

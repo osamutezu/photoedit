@@ -1,3 +1,7 @@
+# v39 Japanese ASCII character presets
+
+Added Kanji Numbers, Tokyo Municipalities (initial characters of selected Tokyo municipalities), Japanese Seasons, Architecture, Elements, and Dense Kanji. SVG exports preserve individual editable Japanese text objects. PDF export remains available for Latin text and vector dot effects; Kanji PDF text is not supported, and an explicit error is displayed rather than silently substituting characters. Font appearance depends on installed fonts.
+
 # AnalogImageProcessor PWA v33 — Fixed FPS experimental export
 
 Built from actual v32 files, preserving existing 13 effects, photo export, trim, quality, audio-capable realtime export, and sharing.

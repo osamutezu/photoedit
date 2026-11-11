@@ -10,7 +10,7 @@ const hex=(r,g,b)=>'#'+[r,g,b].map(v=>Math.round(clamp(v)).toString(16).padStart
 const colors=[['#f92383','#1653b5'],['#df3434','#2446ad'],['#178e63','#ff8c34'],['#171717','#d52c3c'],['#169c9a','#e97469'],['#8643a6','#f2cb32'],['#236bd4','#e9c52e'],['#d7488c','#3b9448'],['#192d68','#d5a33b'],['#78364d','#70cbb3'],['#7045aa','#a4d943'],['#15b9d2','#c43a92'],['#216349','#df7194'],['#8a5b3a','#77b8e6'],['#171717','#edcb2f'],['#4234a4','#e38a2b']];
 function makeDocument(){
  if(!original||!supported.has(current)||videoMode)throw Error('VECTOR export is available for selected photo effects only.');
- const w0=original.width,h0=original.height,scale=Math.min(1,1600/Math.max(w0,h0));
+ const w0=original.width,h0=original.height,scale=Math.min(1,1100/Math.max(w0,h0));
  const w=Math.max(1,Math.round(w0*scale)),h=Math.max(1,Math.round(h0*scale));
  const src=document.createElement('canvas');src.width=w;src.height=h;
  drawPhotoSource(src.getContext('2d',{willReadFrequently:true}),original,0,0,w,h);
@@ -62,5 +62,5 @@ function pdf(doc){
  const chunks=[],offsets=[0];let pos=0;function add(s){let bytes=typeof s==='string'?enc.encode(s):s;chunks.push(bytes);pos+=bytes.length}add('%PDF-1.4\n');for(let i=1;i<=5;i++){offsets[i]=pos;add(`${i} 0 obj\n`);if(i===4){add(`<< /Length ${stream.length} >>\nstream\n`);add(stream);add('endstream\n')}else add(objects[i]+'\n');add('endobj\n')}let start=pos;add(`xref\n0 6\n0000000000 65535 f \n`);for(let i=1;i<=5;i++)add(`${String(offsets[i]).padStart(10,'0')} 00000 n \n`);add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${start}\n%%EOF`);return new Blob(chunks,{type:'application/pdf'})
 }
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}
-window.AnalogVector={supported,async save(format){const doc=makeDocument();if(doc.shapes.length>90000)throw Error('Too many vector objects. Increase dot/character size to reduce complexity.');let blob=format==='svg'?new Blob([svg(doc)],{type:'image/svg+xml;charset=utf-8'}):pdf(doc);download(blob,`analog-image-vector.${format}`);return {count:doc.shapes.length,size:blob.size}}};
+window.AnalogVector={supported,previewSVG(){return svg(makeDocument())},async save(format){const doc=makeDocument();if(doc.shapes.length>90000)throw Error('Too many vector objects. Increase dot/character size to reduce complexity.');let blob=format==='svg'?new Blob([svg(doc)],{type:'image/svg+xml;charset=utf-8'}):pdf(doc);download(blob,`analog-image-vector.${format}`);return {count:doc.shapes.length,size:blob.size}}};
 })();

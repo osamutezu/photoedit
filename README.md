@@ -106,3 +106,7 @@ ASCII ART, RISOGRAPH, HALFTONE and 1-BIT DITHER exports are re-rendered at up to
 - SVG retains actual symbol glyphs for SYMBOLS/BLOCKS; PDF uses editable ASCII approximations for those glyphs rather than failing.
 - PDF ASCII is standard Courier, so typography may differ from SVG; test in Illustrator.
 - Previous features are retained.
+
+
+## v40 Preview / export parity
+The four editable vector effects (1-BIT, RISOGRAPH, ASCII, HALFTONE) now render their SVG master directly into the preview. The same generator drives SVG/PDF. JPG/PNG copy the preview pixels without re-running effects, preventing layout drift. Raster exports are limited to the preview resolution (up to 1100px long edge). PDF still does not support Kanji as editable text. Other effects retain their existing preview renderer; raster export copies that preview exactly. Font fallback between browser and Illustrator may affect typography despite identical positions.

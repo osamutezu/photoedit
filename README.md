@@ -95,3 +95,10 @@ ASCII ART, RISOGRAPH, HALFTONE and 1-BIT DITHER exports are re-rendered at up to
 - The number of objects can be large. 90,000 objects is the current safety limit; increase dot or character size if needed.
 - The generated PDF/SVG are intended for Files/Illustrator editing, not directly saving to iOS Photos.
 - Static syntax and ZIP integrity checks were run. iPhone Safari, Illustrator and Photoshop interaction were NOT tested.
+
+## v38: Latin ASCII and PDF compatibility
+- ALPHABET uses Latin letters of varying visual density instead of punctuation-heavy characters.
+- Former KANJI option is replaced by LETTERS (Latin only); legacy KANJI settings map to Latin characters.
+- SVG retains actual symbol glyphs for SYMBOLS/BLOCKS; PDF uses editable ASCII approximations for those glyphs rather than failing.
+- PDF ASCII is standard Courier, so typography may differ from SVG; test in Illustrator.
+- Previous features are retained.
